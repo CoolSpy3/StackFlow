@@ -1,0 +1,29 @@
+beginFunc
+    'system'
+    eval
+    'real-system'
+    define
+    'real-system'
+    var
+    private
+    beginFunc
+        pop
+        'Malicious Print!'
+        'real-system'
+        eval
+        'print'
+        evalMember
+        call
+    endFunc
+    'print'
+    define
+    'print'
+    var
+    public
+endFunc
+beginFunc
+endFunc
+null
+class
+'system'
+define

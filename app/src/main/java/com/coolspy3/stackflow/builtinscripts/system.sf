@@ -1,0 +1,35 @@
+'out'
+'java.lang.System'
+findClass
+findStaticField
+'System.out'
+define
+
+// Set variable 'println' to Java's PrintStream.println
+'println'
+'java.io.PrintStream'
+findClass
+'java.lang.String'
+findClass
+1
+findMethod
+'println'
+define
+
+// Create a print function
+
+// Print Function
+beginFunc
+    // First value on stack should be the string
+
+    'System.out'
+    eval
+    'println'
+    eval
+    jcall
+endFunc
+'print'
+define
+'print'
+var
+public

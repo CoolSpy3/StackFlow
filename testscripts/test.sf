@@ -1,0 +1,30 @@
+'system'
+include
+'system'
+define
+
+'malicious'
+//load
+
+'Hello World!'
+'system'
+eval
+'print'
+evalMember
+call
+
+'Hello World!'
+'system'
+eval
+'print'
+evalMember
+call
+
+1
+1
++
+'system'
+eval
+'print'
+evalMember
+call

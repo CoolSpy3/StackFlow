@@ -1,0 +1,17 @@
+beginFunc
+    5
+    'x'
+    define
+
+endFunc
+beginFunc
+    beginFunc
+    //Code
+    endFunc
+    'function'
+    define
+endFunc
+null
+class
+
+myClass.x
