@@ -73,7 +73,16 @@ public class Operator
                     stack.set(firstIdx, Utils.interpretNull(Type.typeOf(o2)));
                 apply(stack, interpreter);
             }
-            case NUMBER -> apply(intOp, stack);
+            case NUMBER ->
+            {
+                if (!isUnary && stack.peek() instanceof BigDecimal)
+                {
+                    stack.set(1, new BigDecimal((BigInteger) stack.get(1)));
+                    apply(decOp, stack);
+                }
+                else
+                    apply(intOp, stack);
+            }
             case STRING ->
             {
                 if (isUnary) apply(stringOp, stack);
@@ -113,8 +122,13 @@ public class Operator
         if (isUnary) op.apply((T) stack.poll(), null);
         else
         {
-            T el2 = (T) stack.poll();
+            Object rel2 = stack.poll();
+            if (rel2 instanceof Variable) rel2 = ((Variable) rel2).obj;
+            else if (rel2 instanceof Type) rel2 = rel2.toString();
             T el1 = (T) stack.poll();
+            if (el1 instanceof BigDecimal && rel2 instanceof BigInteger)
+                rel2 = new BigDecimal((BigInteger) rel2);
+            T el2 = (T) rel2;
             stack.push(
                     op.apply(el1, el2 == null ? (T) Utils.interpretNull(Type.typeOf(el1)) : el2));
         }

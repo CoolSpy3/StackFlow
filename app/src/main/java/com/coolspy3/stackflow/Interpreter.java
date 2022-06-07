@@ -28,12 +28,14 @@ public class Interpreter
     public static final ArrayList<Operator> OPERATORS = new ArrayList<>(Arrays.asList(
             Operator.unary("int", a -> a.length, b -> b ? 1 : 0, BigDecimal::intValue, null,
                     java.util.function.Function.identity()::apply, String::length),
-            Operator.binary("add", Utils::concatArrs, null, BigDecimal::add, Function::concat,
-                    BigInteger::add, String::join),
-            Operator.unary("inc", null, null, i -> i.add(BigDecimal.ONE), null,
-                    i -> i.add(BigInteger.ONE), null),
-            Operator.binary("sub", null, null, BigDecimal::subtract, null, BigInteger::subtract,
-                    null),
+            Operator.binary("add", Utils::concatArrs, (a, b) -> a || b, BigDecimal::add,
+                    Function::concat, BigInteger::add, String::join),
+            Operator.unary("inc", arr -> Arrays.copyOf(arr, arr.length + 1), b -> !b,
+                    i -> i.add(BigDecimal.ONE), null, i -> i.add(BigInteger.ONE), null),
+            Operator.binary("sub", null, (a, b) -> a ^ b, BigDecimal::subtract, null,
+                    BigInteger::subtract, null),
+            Operator.unary("dec", arr -> Arrays.copyOf(arr, arr.length - 1), b -> !b,
+                    i -> i.subtract(BigDecimal.ONE), null, i -> i.subtract(BigInteger.ONE), null),
             Operator.binary("mult", null, null, BigDecimal::multiply, null, BigInteger::multiply,
                     null),
             Operator.binary("div", null, null, BigDecimal::divide, null, BigInteger::divide, null),
@@ -41,28 +43,39 @@ public class Interpreter
             Operator.unary("not", null, b -> !b, null, null, BigInteger::not, null),
             Operator.binary("bitShift", null, null, null, null, (a, b) -> a.shiftLeft(b.intValue()),
                     null),
-            Operator.binary("gt", null, (a, b) -> b ? false : a, (a, b) -> a.compareTo(b) > 0, null,
-                    (a, b) -> a.compareTo(b) > 0, (a, b) -> a.compareTo(b) > 0)
-    // case "add" ->
-    // case "inc"
-    // case "sub" ->
-    // case "dec" ->
-    // case "mult" ->
-    // case "div" ->
-    // case "mod" ->
-    // case "not" ->
-    // case "bitShift" ->
-    // case "gt" ->
-    // case "lt" ->
-    // case "gteq" ->
-    // case "lteq" ->
-    // case "eq" ->
-    // case "neq" ->
-    // case "xor" ->
-    // abs
-    // pow
-    // arrops!!!
-    ));
+            Operator.binary("gt", (a, b) -> a.length > b.length, (a, b) -> a ? !b : false,
+                    (a, b) -> a.compareTo(b) > 0, null, (a, b) -> a.compareTo(b) > 0,
+                    (a, b) -> a.compareTo(b) > 0),
+            Operator.binary("lt", (a, b) -> a.length < b.length, (a, b) -> a ? false : b,
+                    (a, b) -> a.compareTo(b) < 0, null, (a, b) -> a.compareTo(b) < 0,
+                    (a, b) -> a.compareTo(b) < 0),
+            Operator.binary("gteq", (a, b) -> a.length >= b.length, (a, b) -> a ? true : !b,
+                    (a, b) -> a.compareTo(b) >= 0, null, (a, b) -> a.compareTo(b) >= 0,
+                    (a, b) -> a.compareTo(b) >= 0),
+            Operator.binary("lteq", (a, b) -> a.length <= b.length, (a, b) -> a ? b : true,
+                    (a, b) -> a.compareTo(b) <= 0, null, (a, b) -> a.compareTo(b) <= 0,
+                    (a, b) -> a.compareTo(b) < 0),
+            Operator.binary("eq", (a, b) -> Arrays.equals(a, b), (a, b) -> a == b,
+                    (a, b) -> a.compareTo(b) == 0, null, (a, b) -> a.equals(b),
+                    (a, b) -> a.equals(b)),
+            Operator.binary("neq", (a, b) -> !Arrays.equals(a, b), (a, b) -> a != b,
+                    (a, b) -> a.compareTo(b) != 0, null, (a, b) -> !a.equals(b),
+                    (a, b) -> !a.equals(b)),
+            Operator.binary("and", null, (a, b) -> a && b, null, null, (a, b) -> a.and(b), null),
+            Operator.binary("or", null, (a, b) -> a || b, null, null, (a, b) -> a.or(b), null),
+            Operator.binary("nand", null, (a, b) -> !(a && b), null, null, (a, b) -> a.and(b).not(),
+                    null),
+            Operator.binary("nor", null, (a, b) -> !(a || b), null, null, (a, b) -> a.or(b).not(),
+                    null),
+            Operator.binary("xor", null, (a, b) -> a ^ b, null, null, (a, b) -> a.xor(b), null),
+            Operator.binary("xnor", null, (a, b) -> !(a ^ b), null, null, (a, b) -> a.xor(b).not(),
+                    null),
+            Operator.unary("neg", null, b -> !b, BigDecimal::negate, null, BigInteger::negate,
+                    null),
+            Operator.unary("abs", null, null, BigDecimal::abs, null, BigInteger::abs, null),
+            Operator.binary("pow", null, null,
+                    (a, b) -> new BigDecimal(Math.pow(a.doubleValue(), b.doubleValue())), null,
+                    (a, b) -> a.pow(b.intValue()), null)));
 
     public LinkedList<Object> stack = new LinkedList<>();
     public final LinkedList<LinkedList<Object>> stackStack = new LinkedList<>();
@@ -283,6 +296,12 @@ public class Interpreter
                     stack.push(arr);
                 }
                 case "len" -> stack.push(BigInteger.valueOf(((Object[]) stack.poll()).length));
+                case "get" ->
+                {
+                    int idx = ((BigInteger) stack.poll()).intValue();
+                    Object[] arr = (Object[]) stack.poll();
+                    stack.push(arr[idx]);
+                }
                 case "for" ->
                 {
                     Function incFunc = (Function) stack.poll();
@@ -533,77 +552,12 @@ public class Interpreter
                 }
                 case "pop" -> stack.pop();
                 case "expand" -> Arrays.stream((Object[]) stack.poll()).forEach(stack::push);
-                case "add" ->
-                {
-
-                }
-                case "inc" ->
-                {
-                    stack.get(0);
-                    stack.push(((BigInteger) stack.poll()).add(((BigInteger) stack.poll())));
-                }
-                case "sub" ->
-                {
-
-                }
-                case "dec" ->
-                {
-
-                }
-                case "mult" ->
-                {
-
-                }
-                case "div" ->
-                {
-
-                }
-                case "mod" ->
-                {
-
-                }
-                case "not" ->
-                {
-
-                }
-                case "bitShift" ->
-                {
-
-                }
-                case "gt" ->
-                {
-
-                }
-                case "lt" ->
-                {
-
-                }
-                case "gteq" ->
-                {
-
-                }
-                case "lteq" ->
-                {
-
-                }
-                case "eq" ->
-                {
-
-                }
-                case "neq" ->
-                {
-
-                }
-                case "xor" ->
-                {
-
-                }
                 default ->
                 {
                     Optional<Operator> op =
                             OPERATORS.stream().filter(o -> o.name.equals(line)).findAny();
 
-                    if (!op.isPresent()) throw new ParseException("Unknown Command: " + line);
+                    if (op.isEmpty()) throw new ParseException("Unknown Command: " + line);
 
                     op.get().apply(stack, this);
                 }

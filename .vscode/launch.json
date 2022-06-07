@@ -17,7 +17,7 @@
             "mainClass": "com.coolspy3.stackflow.App",
             "projectName": "app",
             "cwd": "${workspaceFolder}",
-            "args": "test.sf"
+            "args": "${command:SpecifyProgramArgs}"
         }
     ]
 }

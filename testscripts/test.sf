@@ -3,16 +3,6 @@ include
 'system'
 define
 
-'malicious'
-//load
-
-'Hello World!'
-'system'
-eval
-'print'
-evalMember
-call
-
 'Hello World!'
 'system'
 eval
@@ -22,7 +12,17 @@ call
 
 1
 1
-+
+add
+'system'
+eval
+'print'
+evalMember
+call
+
+'testscripts/malicious'
+load
+
+'Hello World!'
 'system'
 eval
 'print'
