@@ -7,6 +7,8 @@ import java.util.List;
 public class Function
 {
 
+    public static final Function NOOP = new Function(new ArrayList<>(), Context.ROOT_CTX);
+
     public final List<String> code;
     public final Context ctx;
 

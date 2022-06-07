@@ -1,31 +1,29 @@
 'javax.swing.JFrame'
 findClass
 'JFrame'
-name
-set
+define
 
 'My Awesome Frame'
+'name'
+define
+
 'JFrame'
-name
-val
+eval
 'java.lang.String'
 findClass
 1
 findConstructor
 jNew
 'frame'
-name
-set
+define
 
 320
 500
 'frame'
-name
-val
+eval
 'setSize'
 'JFrame'
-name
-val
+eval
 'TYPE'
 'java.lang.Integer'
 findClass
@@ -40,12 +38,10 @@ jcall
 
 3
 'frame'
-name
-val
+eval
 'setDefaultCloseOperation'
 'JFrame'
-name
-val
+eval
 'TYPE'
 'java.lang.Integer'
 findClass
@@ -56,15 +52,13 @@ jcall
 
 'add'
 'JFrame'
-name
-val
+eval
 'java.awt.Component'
 findClass
 1
 findMethod
 'add'
-name
-set
+define
 
 'OMG A LABEL!!!! :O'
 'javax.swing.JLabel'
@@ -76,22 +70,18 @@ findConstructor
 jNew
 
 'frame'
-name
-val
+eval
 'add'
-name
-val
+eval
 
 jcall
 
 true
 'frame'
-name
-val
+eval
 'setVisible'
 'JFrame'
-name
-val
+eval
 'TYPE'
 'java.lang.Boolean'
 findClass
@@ -100,8 +90,7 @@ findStaticField
 findMethod
 jcall
 
-beginFunc
-endFunc
+noop
 beginFunc
 true
 endFunc

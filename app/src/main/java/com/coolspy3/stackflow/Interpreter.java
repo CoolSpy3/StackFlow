@@ -184,6 +184,7 @@ public class Interpreter
 
                     stack.push(new Function(func, ctx));
                 }
+                case "noop" -> stack.push(Function.NOOP);
                 case "call" ->
                 {
                     try
