@@ -1,5 +1,6 @@
 package com.coolspy3.stackflow;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,6 +28,21 @@ public class Function
         {
             interpreter.ctx = retCtx;
         }
+    }
+
+    public static Function concat(Function... funcs)
+    {
+        Context ctx = new Context(Context.ROOT_CTX);
+        ArrayList<String> instructions = new ArrayList<>();
+        for (int i = 0; i < funcs.length; i++)
+        {
+            String name = Integer.toString(i);
+            ctx.add(name, new Variable(funcs[i]));
+            instructions.add(name);
+            instructions.add("eval");
+            instructions.add("call");
+        }
+        return new Function(instructions, ctx);
     }
 
 }

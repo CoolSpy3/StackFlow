@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.coolspy3.stackflow.builtinscripts.BuiltinLoader;
@@ -23,6 +24,45 @@ import org.apache.commons.text.StringEscapeUtils;
 
 public class Interpreter
 {
+
+    public static final ArrayList<Operator> OPERATORS = new ArrayList<>(Arrays.asList(
+            Operator.unary("int", a -> a.length, b -> b ? 1 : 0, BigDecimal::intValue, null,
+                    java.util.function.Function.identity()::apply, String::length),
+            Operator.binary("add", Utils::concatArrs, null, BigDecimal::add, Function::concat,
+                    BigInteger::add, String::join),
+            Operator.unary("inc", null, null, i -> i.add(BigDecimal.ONE), null,
+                    i -> i.add(BigInteger.ONE), null),
+            Operator.binary("sub", null, null, BigDecimal::subtract, null, BigInteger::subtract,
+                    null),
+            Operator.binary("mult", null, null, BigDecimal::multiply, null, BigInteger::multiply,
+                    null),
+            Operator.binary("div", null, null, BigDecimal::divide, null, BigInteger::divide, null),
+            Operator.binary("mod", null, null, null, null, BigInteger::mod, null),
+            Operator.unary("not", null, b -> !b, null, null, BigInteger::not, null),
+            Operator.binary("bitShift", null, null, null, null, (a, b) -> a.shiftLeft(b.intValue()),
+                    null),
+            Operator.binary("gt", null, (a, b) -> b ? false : a, (a, b) -> a.compareTo(b) > 0, null,
+                    (a, b) -> a.compareTo(b) > 0, (a, b) -> a.compareTo(b) > 0)
+    // case "add" ->
+    // case "inc"
+    // case "sub" ->
+    // case "dec" ->
+    // case "mult" ->
+    // case "div" ->
+    // case "mod" ->
+    // case "not" ->
+    // case "bitShift" ->
+    // case "gt" ->
+    // case "lt" ->
+    // case "gteq" ->
+    // case "lteq" ->
+    // case "eq" ->
+    // case "neq" ->
+    // case "xor" ->
+    // abs
+    // pow
+    // arrops!!!
+    ));
 
     public LinkedList<Object> stack = new LinkedList<>();
     public final LinkedList<LinkedList<Object>> stackStack = new LinkedList<>();
@@ -558,7 +598,15 @@ public class Interpreter
                 {
 
                 }
-                default -> throw new ParseException("Unknown Command: " + line);
+                default ->
+                {
+                    Optional<Operator> op =
+                            OPERATORS.stream().filter(o -> o.name.equals(line)).findAny();
+
+                    if (!op.isPresent()) throw new ParseException("Unknown Command: " + line);
+
+                    op.get().apply(stack, this);
+                }
             }
         }
     }

@@ -20,6 +20,11 @@ public final class Utils
         return Stream.of(u).flatMap(U::stream).collect(Collectors.toSet());
     }
 
+    public static Object[] concatArrs(Object[]... arrs)
+    {
+        return Stream.of(arrs).flatMap(Stream::of).toArray();
+    }
+
     public static BigDecimal isDecimal(String s)
     {
         try
@@ -28,6 +33,16 @@ public final class Utils
         }
         catch (NumberFormatException e)
         {
+            if (s.substring(s.length() - 1).toLowerCase().equals("d"))
+            {
+                s = s.substring(0, s.length() - 1);
+                try
+                {
+                    return new BigDecimal(s);
+                }
+                catch (NumberFormatException exc)
+                {}
+            }
             return null;
         }
     }

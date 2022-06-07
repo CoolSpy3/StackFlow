@@ -3,25 +3,24 @@ package com.coolspy3.stackflow;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.LinkedList;
-import java.util.function.BinaryOperator;
-import java.util.function.UnaryOperator;
+import java.util.function.BiFunction;
 
 public class Operator
 {
 
     public final String name;
     public final boolean isUnary;
-    public final BinaryOperator<Object[]> arrOp;
-    public final BinaryOperator<Boolean> boolOp;
-    public final BinaryOperator<BigDecimal> decOp;
-    public final BinaryOperator<Runnable> funcOp;
-    public final BinaryOperator<BigInteger> intOp;
-    public final BinaryOperator<String> stringOp;
+    public final BinaryOpFunc<Object[]> arrOp;
+    public final BinaryOpFunc<Boolean> boolOp;
+    public final BinaryOpFunc<BigDecimal> decOp;
+    public final BinaryOpFunc<Function> funcOp;
+    public final BinaryOpFunc<BigInteger> intOp;
+    public final BinaryOpFunc<String> stringOp;
 
-    public Operator(String name, boolean isUnary, BinaryOperator<Object[]> arrOp,
-            BinaryOperator<Boolean> boolOp, BinaryOperator<BigDecimal> decOp,
-            BinaryOperator<Runnable> funcOp, BinaryOperator<BigInteger> intOp,
-            BinaryOperator<String> stringOp)
+    public Operator(String name, boolean isUnary, BinaryOpFunc<Object[]> arrOp,
+            BinaryOpFunc<Boolean> boolOp, BinaryOpFunc<BigDecimal> decOp,
+            BinaryOpFunc<Function> funcOp, BinaryOpFunc<BigInteger> intOp,
+            BinaryOpFunc<String> stringOp)
     {
         this.name = name;
         this.isUnary = isUnary;
@@ -33,20 +32,20 @@ public class Operator
         this.stringOp = stringOp;
     }
 
-    public static Operator unary(String name, UnaryOperator<Object[]> arrOp,
-            UnaryOperator<Boolean> boolOp, UnaryOperator<BigDecimal> decOp,
-            UnaryOperator<Runnable> funcOp, UnaryOperator<BigInteger> intOp,
-            UnaryOperator<String> stringOp)
+    public static Operator unary(String name, UnaryOpFunc<Object[]> arrOp,
+            UnaryOpFunc<Boolean> boolOp, UnaryOpFunc<BigDecimal> decOp,
+            UnaryOpFunc<Function> funcOp, UnaryOpFunc<BigInteger> intOp,
+            UnaryOpFunc<String> stringOp)
     {
         return new Operator(name, true, (v, n) -> arrOp.apply(v), (v, n) -> boolOp.apply(v),
                 (v, n) -> decOp.apply(v), (v, n) -> funcOp.apply(v), (v, n) -> intOp.apply(v),
                 (v, n) -> stringOp.apply(v));
     }
 
-    public static Operator binary(String name, BinaryOperator<Object[]> arrOp,
-            BinaryOperator<Boolean> boolOp, BinaryOperator<BigDecimal> decOp,
-            BinaryOperator<Runnable> funcOp, BinaryOperator<BigInteger> intOp,
-            BinaryOperator<String> stringOp)
+    public static Operator binary(String name, BinaryOpFunc<Object[]> arrOp,
+            BinaryOpFunc<Boolean> boolOp, BinaryOpFunc<BigDecimal> decOp,
+            BinaryOpFunc<Function> funcOp, BinaryOpFunc<BigInteger> intOp,
+            BinaryOpFunc<String> stringOp)
     {
         return new Operator(name, false, arrOp, boolOp, decOp, funcOp, intOp, stringOp);
     }
@@ -107,7 +106,7 @@ public class Operator
     }
 
     @SuppressWarnings("unchecked")
-    private <T> void apply(BinaryOperator<T> op, LinkedList<Object> stack)
+    private <T> void apply(BinaryOpFunc<T> op, LinkedList<Object> stack)
     {
         if (op == null)
             throw new ParseException("Cannot apply operator: " + name + " for the given types.");
@@ -120,5 +119,13 @@ public class Operator
                     op.apply(el1, el2 == null ? (T) Utils.interpretNull(Type.typeOf(el1)) : el2));
         }
     }
+
+    @FunctionalInterface
+    public static interface UnaryOpFunc<T> extends java.util.function.Function<T, Object>
+    {}
+
+    @FunctionalInterface
+    public static interface BinaryOpFunc<T> extends BiFunction<T, T, Object>
+    {}
 
 }

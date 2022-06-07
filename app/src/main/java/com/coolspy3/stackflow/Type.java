@@ -25,7 +25,7 @@ public enum Type
         if (o instanceof Constructor) return JAVA_CONSTRUCTOR;
         if (o instanceof StackObject) return OBJECT;
         if (o instanceof StackClass) return CLASS;
-        if (o instanceof Runnable) return FUNCTION;
+        if (o instanceof Function) return FUNCTION;
         if (o instanceof Variable) return VARIABLE;
         return null;
     }
