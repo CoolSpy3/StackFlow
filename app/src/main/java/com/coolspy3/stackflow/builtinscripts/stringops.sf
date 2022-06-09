@@ -1,0 +1,100 @@
+pushRootCtx
+
+    'types'
+    load
+
+    'java.lang.String'
+    findClass
+    'String'
+    define
+
+    'endsWith'
+    'String'
+    eval
+    copy
+    1
+    findMethod
+    'endsWith'
+    define
+
+    beginFunc
+        swp
+        'endsWith'
+        eval
+        jcall
+    endFunc
+
+    'split'
+    'String'
+    eval
+    copy
+    1
+    findMethod
+    'split'
+    define
+
+    beginFunc
+        swp
+        'split'
+        eval
+        jcall
+    endFunc
+
+    'startsWith'
+    'String'
+    eval
+    copy
+    1
+    findMethod
+    'startsWith'
+    define
+
+    beginFunc
+        swp
+        'startsWith'
+        eval
+        jcall
+    endFunc
+
+    'substring'
+    'String'
+    eval
+    'Integer_TYPE'
+    eval
+    copy
+    2
+    findMethod
+    'substring'
+    define
+
+    beginFunc
+        2
+        pull
+        'substring'
+        eval
+        jcall
+    endFunc
+
+popCtx
+
+'substring'
+define
+'startsWith'
+define
+'split'
+define
+'endsWith'
+define
+
+'endsWith'
+var
+public
+'split'
+var
+public
+'startsWith'
+var
+public
+'substring'
+var
+public

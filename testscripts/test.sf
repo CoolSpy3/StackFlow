@@ -3,26 +3,40 @@ include
 'system'
 define
 
-'Hello World!'
-'system'
-eval
-'print'
-evalMember
-call
+// 'Hello World!'
+// 'system'
+// eval
+// 'print'
+// evalMember
+// call
 
-1
-1
-add
-'system'
-eval
-'print'
-evalMember
-call
+// 1
+// 1
+// add
+// 'system'
+// eval
+// 'print'
+// evalMember
+// call
 
-'testscripts/malicious'
+// 'testscripts/malicious'
+// load
+
+// 'Hello World!'
+// 'system'
+// eval
+// 'print'
+// evalMember
+// call
+
+'ezjava'
 load
 
-'Hello World!'
+'com.coolspy3.stackflow.App.test(int[][][],java.lang.String, java.lang.String[],     boolean)'
+'ezMethod'
+eval
+call
+
 'system'
 eval
 'print'

@@ -37,9 +37,12 @@ public class Operator
             UnaryOpFunc<Function> funcOp, UnaryOpFunc<BigInteger> intOp,
             UnaryOpFunc<String> stringOp)
     {
-        return new Operator(name, true, (v, n) -> arrOp.apply(v), (v, n) -> boolOp.apply(v),
-                (v, n) -> decOp.apply(v), (v, n) -> funcOp.apply(v), (v, n) -> intOp.apply(v),
-                (v, n) -> stringOp.apply(v));
+        return new Operator(name, true, arrOp == null ? null : (v, n) -> arrOp.apply(v),
+                boolOp == null ? null : (v, n) -> boolOp.apply(v),
+                decOp == null ? null : (v, n) -> decOp.apply(v),
+                funcOp == null ? null : (v, n) -> funcOp.apply(v),
+                intOp == null ? null : (v, n) -> intOp.apply(v),
+                stringOp == null ? null : (v, n) -> stringOp.apply(v));
     }
 
     public static Operator binary(String name, BinaryOpFunc<Object[]> arrOp,
@@ -119,7 +122,7 @@ public class Operator
     {
         if (op == null)
             throw new ParseException("Cannot apply operator: " + name + " for the given types.");
-        if (isUnary) op.apply((T) stack.poll(), null);
+        if (isUnary) stack.push(op.apply((T) stack.poll(), null));
         else
         {
             Object rel2 = stack.poll();

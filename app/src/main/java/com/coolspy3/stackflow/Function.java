@@ -7,24 +7,27 @@ import java.util.List;
 public class Function
 {
 
-    public static final Function NOOP = new Function(new ArrayList<>(), Context.ROOT_CTX);
+    public static final Function NOOP =
+            new Function(new ArrayList<>(), Context.ROOT_CTX, new CallStackElement("<noop>", 0));
 
     public final List<String> code;
     public final Context ctx;
+    public final CallStackElement location;
 
-    public Function(List<String> code, Context ctx)
+    public Function(List<String> code, Context ctx, CallStackElement location)
     {
         this.code = Collections.unmodifiableList(code);
         this.ctx = ctx;
+        this.location = location;
     }
 
     public void exec(Interpreter interpreter) throws Throwable
     {
         Context retCtx = interpreter.ctx;
-        interpreter.ctx = ctx;
+        interpreter.ctx = ctx.push();
         try
         {
-            interpreter.exec(code);
+            interpreter.exec(code, location.file, location.line);
         }
         finally
         {
@@ -44,7 +47,7 @@ public class Function
             instructions.add("eval");
             instructions.add("call");
         }
-        return new Function(instructions, ctx);
+        return new Function(instructions, ctx, new CallStackElement("<concat_function>", 0));
     }
 
 }

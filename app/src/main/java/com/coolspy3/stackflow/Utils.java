@@ -2,7 +2,6 @@ package com.coolspy3.stackflow;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
@@ -85,7 +84,7 @@ public final class Utils
             {
                 Object[] arr = (Object[]) param;
                 Class<?>[] newTypes = new Class[arr.length];
-                Arrays.fill(newTypes, types[i].arrayType());
+                Arrays.fill(newTypes, types[i].componentType());
                 Object[] newVals = convertArgs(newTypes, arr);
                 params[i] = Arrays.copyOf(newVals, newVals.length, (Class) types[i]);
             }
@@ -170,8 +169,7 @@ public final class Utils
             case DECIMAL:
                 return BigDecimal.ZERO;
             case FUNCTION:
-                return new com.coolspy3.stackflow.Function(new ArrayList<>(),
-                        new Context(Context.ROOT_CTX));
+                return com.coolspy3.stackflow.Function.NOOP;
             case NUMBER:
                 return BigInteger.ZERO;
             case STRING:

@@ -30,7 +30,7 @@ public final class BuiltinLoader
             if (is == null)
                 throw new FileNotFoundException("Builtin Script: " + script + " cannot be loaded");
 
-            interpreter.exec(is);
+            interpreter.exec(is, String.format("<%s>", script));
         }
     }
 

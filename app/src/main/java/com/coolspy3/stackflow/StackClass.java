@@ -23,7 +23,8 @@ public class StackClass
         interpreter.ctx = ctx;
         try
         {
-            interpreter.exec(staticInitFunc.code);
+            interpreter.exec(staticInitFunc.code, staticInitFunc.location.file,
+                    staticInitFunc.location.line);
         }
         finally
         {
@@ -42,7 +43,7 @@ public class StackClass
         interpreter.ctx = ctx;
         try
         {
-            interpreter.exec(initFunc.code);
+            interpreter.exec(initFunc.code, initFunc.location.file, initFunc.location.line);
         }
         finally
         {
