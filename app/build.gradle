@@ -25,9 +25,16 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:30.1.1-jre'
-implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
+    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.9'
 
+}
 
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/resources"
+        }
+    }
 }
 
 application {
@@ -38,4 +45,15 @@ application {
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes["Main-Class"] = "com.coolspy3.stackflow.App"
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.withType(Copy).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }

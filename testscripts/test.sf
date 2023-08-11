@@ -29,11 +29,46 @@ define
 // evalMember
 // call
 
-'ezjava'
-load
+// 'ezjava'
+// load
 
-'com.coolspy3.stackflow.App.test(int[][][],java.lang.String, java.lang.String[],     boolean)'
-'ezMethod'
+// 'com.coolspy3.stackflow.App.test(int[][][],java.lang.String, java.lang.String[],     boolean)'
+// 'ezMethod'
+// eval
+// call
+
+null
+'myFunc'
+define
+
+beginFunc
+    copy
+    'system'
+    eval
+    'print'
+    evalMember
+    call
+
+    beginFunc
+        inc
+        'myFunc'
+        eval
+        call
+    endFunc
+    swp
+    copy
+    2
+    pull
+    swp
+    8
+    neq
+    if
+endFunc
+'myFunc'
+define
+
+0
+'myFunc'
 eval
 call
 
