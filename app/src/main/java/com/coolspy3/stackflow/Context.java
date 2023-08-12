@@ -308,6 +308,7 @@ public class Context implements Map<String, Variable>
 
     public Context pop()
     {
+        if (sprs[0] == ROOT_CTX) return this;
         return sprs[0];
     }
 

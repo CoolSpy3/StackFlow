@@ -29,7 +29,7 @@ public class Interpreter
 
     public static final ArrayList<Operator> OPERATORS = new ArrayList<>(Arrays.asList(
             Operator.unary("int", a -> BigInteger.valueOf(a.length), b -> b ? 1 : 0,
-                    BigDecimal::intValue, null, java.util.function.Function.identity()::apply,
+                    BigDecimal::toBigInteger, null, java.util.function.Function.identity()::apply,
                     s -> BigInteger.valueOf(s.length())),
             Operator.binary("add", Utils::concatArrs, (a, b) -> a || b, BigDecimal::add,
                     Function::concat, BigInteger::add, String::concat),
@@ -142,9 +142,9 @@ public class Interpreter
                     continue;
                 }
 
-                if (line.startsWith("\'"))
+                if (line.startsWith("'"))
                 {
-                    if (!line.endsWith("\'"))
+                    if (!line.endsWith("'"))
                         throw new ParseException("Unterminated String: " + line);
 
                     stack.push(line.substring(1, line.length() - 1));
@@ -302,7 +302,8 @@ public class Interpreter
                         stack.push(stack.remove(idx));
                     }
                     case "typeOf" -> stack.push(Type.typeOf(stack.poll()));
-                    case "string" -> stack.push(stack.poll().toString());
+                    case "string" -> stack
+                            .push(stack.peek() == null ? "<null>" : stack.poll().toString());
                     case "type" -> stack.push(Type.fromName(stack.poll().toString()));
                     case "array" ->
                     {
@@ -371,17 +372,20 @@ public class Interpreter
                         Function func = (Function) stack.poll();
 
                         ThrowableSupplier<Boolean> checker = () -> {
-                            checkFunc.exec(this);
+                            exec(checkFunc.code, checkFunc.location.file, checkFunc.location.line);
                             return ((Boolean) stack.poll()) == true;
                         };
 
+                        Context retCtx = ctx;
+                        ctx = func.ctx.push();
                         callStack.push(getStackElement(file, startLine, i));
+
                         try
                         {
                             while (checker.get())
                                 try
                                 {
-                                    func.exec(this);
+                                    exec(func.code, func.location.file, func.location.line);
                                 }
                                 catch (ControlInterrupt e)
                                 {
@@ -394,6 +398,7 @@ public class Interpreter
                         finally
                         {
                             callStack.poll();
+                            ctx = retCtx;
                         }
                     }
                     case "doWhile" ->
@@ -402,17 +407,20 @@ public class Interpreter
                         Function func = (Function) stack.poll();
 
                         ThrowableSupplier<Boolean> checker = () -> {
-                            checkFunc.exec(this);
+                            exec(checkFunc.code, checkFunc.location.file, checkFunc.location.line);
                             return ((Boolean) stack.poll()) == true;
                         };
 
+                        Context retCtx = ctx;
+                        ctx = func.ctx.push();
                         callStack.push(getStackElement(file, startLine, i));
+
                         try
                         {
                             do
                                 try
                                 {
-                                    func.exec(this);
+                                    exec(func.code, func.location.file, func.location.line);
                                 }
                                 catch (ControlInterrupt e)
                                 {
@@ -426,6 +434,7 @@ public class Interpreter
                         finally
                         {
                             callStack.poll();
+                            ctx = retCtx;
                         }
                     }
                     case "break" -> throw ControlInterrupt.BREAK;
@@ -672,7 +681,7 @@ public class Interpreter
                     case "pop" -> stack.pop();
                     case "expand" -> Arrays.stream((Object[]) stack.poll()).forEach(stack::push);
                     case "logStack" -> System.out.println("Stack: " + stack.toString());
-                    case "logCtx" -> System.out.println("Stack: " + ctx.toString());
+                    case "logCtx" -> System.out.println("Ctx: " + ctx.toString());
                     default ->
                     {
                         Optional<Operator> op =
@@ -691,6 +700,10 @@ public class Interpreter
                         }
                     }
                 }
+            }
+            catch (ControlInterrupt e)
+            {
+                throw e;
             }
             catch (Exception e)
             {

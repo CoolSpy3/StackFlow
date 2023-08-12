@@ -127,7 +127,7 @@ public class Operator
         {
             Object rel2 = stack.poll();
             if (rel2 instanceof Variable) rel2 = ((Variable) rel2).obj;
-            else if (rel2 instanceof Type) rel2 = rel2.toString();
+            if (rel2 instanceof Type) rel2 = rel2.toString();
             T el1 = (T) stack.poll();
             if (el1 instanceof BigDecimal && rel2 instanceof BigInteger)
                 rel2 = new BigDecimal((BigInteger) rel2);

@@ -60,15 +60,19 @@ public final class Utils
 
     public static Object convertJava(Object o)
     {
+        if (o == null) return null;
         if (o.getClass().isArray())
         {
             Object[] jarr = (Object[]) o;
             return transformArray(jarr, Utils::convertJava, Object[]::new);
         }
-        if (Type.typeOf(o) == Type.JAVA_OBJECT) return new JavaObject(o);
-        else if (o instanceof Character) return "" + o;
-        else
-            return o;
+        if (o.getClass() == Character.class || o.getClass() == Character.TYPE) return "" + o;
+        if (o.getClass() == Float.class || o.getClass() == Float.TYPE
+                || o.getClass() == Double.class || o.getClass() == Double.TYPE)
+            return new BigDecimal((double) o);
+        if (o instanceof Number) return BigInteger.valueOf((long) o);
+        if (Type.typeOf(o) == null) return new JavaObject(o);
+        return o;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
