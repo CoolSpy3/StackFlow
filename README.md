@@ -54,6 +54,7 @@ Runs the provided JAVA_FUNCTION by attempting to read as many arguments as neces
 | `char`/`Character` | `NUMBER` or `STRING` (Only the first character will be passed) |
 | `byte`/`short`/`int`/`long`/`Byte`/`Short`/`Integer`/`Long` | `NUMBER` |
 | `float`/`double`/`Float`/`Double` | `DECIMAL` |
+
 All other parameters will be passed as they are stored on the stack. `null` will always be passed as `null`.
 
 If the function's return value is non-void, it will be converted back into a valid StackFlow type and pushed onto the stack.
